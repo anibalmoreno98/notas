@@ -1,0 +1,5 @@
+tareas
+---
+1. hacer que el menu funcione cuando hemos seleccionado una nota
+
+2. 

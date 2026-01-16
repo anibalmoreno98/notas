@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.mdi.notas.controller.NotaFxController">
+
+    <!-- MENÚ SUPERIOR -->
+    <top>
+        <VBox spacing="5" style="-fx-padding: 10;">
+            <MenuBar>
+                <Menu text="Archivo">
+                    <MenuItem text="Nueva Nota" onAction="#abrirFormulario"/>
+                    <MenuItem text="Ver Notas" onAction="#abrirLista"/>
+                </Menu>
+
+                <Menu text="Informe">
+                    <MenuItem text="Generar informe" onAction="#generarInforme"/>
+                </Menu>
+
+                <Menu text="Análisis">
+                    <MenuItem text="Total de palabras" onAction="#mostrarTotalPalabras"/>
+                    <MenuItem text="Número de líneas" onAction="#mostrarNumeroLineas"/>
+                    <MenuItem text="Número de caracteres" onAction="#mostrarNumeroCaracteres"/>
+                    <MenuItem text="Frecuencia de palabras" onAction="#mostrarFrecuenciaPalabras"/>
+                </Menu>
+            </MenuBar>
+        </VBox>
+    </top>
+
+    <!-- CENTRO: STACKPANE MDI + PANTALLA PRINCIPAL -->
+    <center>
+        <StackPane fx:id="escritorio">
+
+            <HBox spacing="20" style="-fx-padding: 20;">
+
+                <!-- PANEL IZQUIERDO (50%) -->
+                <VBox alignment="CENTER"
+                      spacing="10"
+                      HBox.hgrow="ALWAYS"
+                      maxWidth="Infinity">
+
+                    <Button text="+ Nuevo"
+                            onAction="#abrirFormulario"
+                            style="-fx-font-size: 32px; -fx-padding: 40px; -fx-alignment: center;"
+                            maxWidth="Infinity"
+                            prefHeight="200"
+                            VBox.vgrow="ALWAYS"/>
+                </VBox>
+
+                <!-- PANEL DERECHO (50%) -->
+                <VBox spacing="10"
+                      HBox.hgrow="ALWAYS"
+                      maxWidth="Infinity">
+
+                    <Label text="Última nota"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+                    <Label fx:id="lblTituloUltimaNota"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold;"
+                           wrapText="true"/>
+
+                    <TextArea fx:id="txtContenidoUltimaNota"
+                              editable="false"
+                              wrapText="true"
+                              prefHeight="200"
+                              VBox.vgrow="ALWAYS"/>
+                </VBox>
+
+            </HBox>
+
+        </StackPane>
+    </center>
+
+    <!-- BARRA DE ESTADO -->
+    <bottom>
+        <HBox style="-fx-padding: 5; -fx-background-color: #ddd;">
+            <Label fx:id="lblEstado" text="Listo"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

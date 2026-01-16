@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.Button?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      spacing="10"
+      prefWidth="600"
+      prefHeight="400"
+      style="-fx-padding: 20; -fx-border-color: gray; -fx-border-width: 2; -fx-background-color: white;"
+      fx:controller="com.mdi.notas.controller.FormNuevaController">
+
+    <Button text="← Volver atrás" onAction="#volverAtras"
+            style="-fx-font-size: 16px; -fx-padding: 10px;"/>
+
+    <TextField fx:id="txtTitulo" promptText="Título"/>
+    <TextArea fx:id="txtContenido" promptText="Contenido" prefRowCount="10"/>
+
+    <Button text="Guardar" onAction="#guardarNota"/>
+</VBox>
