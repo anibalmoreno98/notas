@@ -5,6 +5,9 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.stage.Window;
+
 import java.io.File;
 import java.nio.file.Files;
 
@@ -62,8 +65,19 @@ public class InformeController {
                     new FileChooser.ExtensionFilter("Archivo de texto", "*.txt")
             );
 
-            File archivo = chooser.showSaveDialog(null);
+            chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+
+            chooser.setInitialFileName("informe.txt");
+
+            Window window = areaResumen.getScene().getWindow();
+
+            File archivo = chooser.showSaveDialog(window);
             if (archivo != null) {
+
+                if (!archivo.getName().endsWith(".txt")) {
+                    archivo = new File(archivo.getAbsolutePath() + ".txt");
+                }
+
                 Files.writeString(
                         archivo.toPath(),
                         generator.generarResumen() + "\n\n" + generator.getFrecuenciaPalabras()
