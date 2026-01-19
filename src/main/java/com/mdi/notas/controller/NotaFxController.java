@@ -15,6 +15,11 @@ import com.mdi.notas.service.NotaService;
 import com.mdi.notas.informe.InformeController;
 import com.mdi.notas.informe.InformeGenerator;
 
+/**
+ * Controlador principal de la aplicación MDI.
+ * Gestiona la pantalla principal, la carga dinámica de ventanas internas,
+ * el análisis de texto, el estado de la interfaz y la nota actualmente activa.
+ */
 @Controller
 public class NotaFxController {
 
@@ -30,29 +35,31 @@ public class NotaFxController {
     @FXML
     private TextArea txtContenidoUltimaNota;
 
-    // Guardamos la pantalla principal
+    /** Nodo que representa la pantalla principal del MDI. */
     private Node pantallaPrincipal;
 
-    // NUEVO: contenido de la nota actualmente seleccionada
+    /** Contenido de la nota actualmente seleccionada o activa. */
     private String contenidoActual = "";
 
+    /**
+     * Inicializa el controlador.
+     * Guarda la pantalla principal, carga la última nota y establece el contenido activo.
+     */
     @FXML
     public void initialize() {
         try {
             pantallaPrincipal = escritorio.getChildren().get(0);
             cargarUltimaNota();
-
-            // Inicialmente, el contenido actual es la última nota
             contenidoActual = txtContenidoUltimaNota.getText();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // ---------------------------------------------------------
-    // CARGAR ÚLTIMA NOTA
-    // ---------------------------------------------------------
+    /**
+     * Carga la última nota creada según el ID más alto.
+     * Actualiza la pantalla principal y el contenido activo.
+     */
     private void cargarUltimaNota() {
         try {
             NotaService service = App.getContext().getBean(NotaService.class);
@@ -60,15 +67,11 @@ public class NotaFxController {
 
             if (!notas.isEmpty()) {
 
-                // Ordenar por ID descendente
                 notas.sort((a, b) -> Long.compare(b.getId(), a.getId()));
-
                 Nota ultima = notas.get(0);
 
                 lblTituloUltimaNota.setText(ultima.getTitulo());
                 txtContenidoUltimaNota.setText(ultima.getContenido());
-
-                // Actualizar nota activa
                 contenidoActual = ultima.getContenido();
 
             } else {
@@ -82,29 +85,38 @@ public class NotaFxController {
         }
     }
 
+    /**
+     * Refresca la última nota mostrada en la pantalla principal.
+     */
     public void refrescarUltimaNota() {
         cargarUltimaNota();
     }
 
-    // ---------------------------------------------------------
-    // MÉTODO PARA ACTUALIZAR LA NOTA ACTIVA
-    // ---------------------------------------------------------
+    /**
+     * Establece el contenido de la nota actualmente activa.
+     *
+     * @param texto contenido de la nota seleccionada
+     */
     public void setContenidoActual(String texto) {
         this.contenidoActual = texto;
     }
 
-    // ---------------------------------------------------------
-    // VOLVER ATRÁS (MDI)
-    // ---------------------------------------------------------
+    /**
+     * Vuelve a la pantalla principal del MDI.
+     * Limpia el escritorio y restaura el nodo inicial.
+     */
     @FXML
     public void volverAtras() {
         escritorio.getChildren().setAll(pantallaPrincipal);
         setEstado("Volviste a la pantalla principal");
     }
 
-    // ---------------------------------------------------------
-    // CARGA DE VENTANAS MDI
-    // ---------------------------------------------------------
+    /**
+     * Carga una ventana interna dentro del MDI.
+     * Asigna el controlador principal a los controladores hijos.
+     *
+     * @param ruta ruta del archivo FXML a cargar
+     */
     private void cargarVentana(String ruta) {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource(ruta));
@@ -127,26 +139,34 @@ public class NotaFxController {
         }
     }
 
+    /**
+     * Abre el formulario para crear una nueva nota.
+     */
     @FXML
     public void abrirFormulario() {
         cargarVentana("/FormNueva.fxml");
     }
 
+    /**
+     * Abre la ventana que muestra la lista de notas.
+     */
     @FXML
     public void abrirLista() {
         cargarVentana("/ListaNotas.fxml");
     }
 
-    // ---------------------------------------------------------
-    // ESTADO
-    // ---------------------------------------------------------
+    /**
+     * Actualiza el mensaje de estado mostrado en la parte inferior de la interfaz.
+     *
+     * @param msg mensaje a mostrar
+     */
     public void setEstado(String msg) {
         lblEstado.setText(msg);
     }
 
-    // ---------------------------------------------------------
-    // INFORME
-    // ---------------------------------------------------------
+    /**
+     * Genera un informe basado en la nota activa y lo muestra en una nueva ventana.
+     */
     @FXML
     public void generarInforme() {
         try {
@@ -168,13 +188,18 @@ public class NotaFxController {
         }
     }
 
-    // ---------------------------------------------------------
-    // ANÁLISIS DE TEXTO (USANDO contenidoActual)
-    // ---------------------------------------------------------
+    /**
+     * Crea un analizador de texto basado en el contenido actual.
+     *
+     * @return instancia de InformeGenerator
+     */
     private InformeGenerator crearAnalizador() {
         return new InformeGenerator(contenidoActual);
     }
 
+    /**
+     * Muestra el total de palabras del contenido activo.
+     */
     @FXML
     public void mostrarTotalPalabras() {
         InformeGenerator gen = crearAnalizador();
@@ -183,6 +208,9 @@ public class NotaFxController {
         mostrarPopup("Total de palabras", "El documento contiene " + total + " palabras.");
     }
 
+    /**
+     * Muestra el número de líneas del contenido activo.
+     */
     @FXML
     public void mostrarNumeroLineas() {
         InformeGenerator gen = crearAnalizador();
@@ -191,6 +219,9 @@ public class NotaFxController {
         mostrarPopup("Número de líneas", "El documento contiene " + total + " líneas.");
     }
 
+    /**
+     * Muestra el número de caracteres del contenido activo.
+     */
     @FXML
     public void mostrarNumeroCaracteres() {
         InformeGenerator gen = crearAnalizador();
@@ -199,6 +230,9 @@ public class NotaFxController {
         mostrarPopup("Número de caracteres", "El documento contiene " + total + " caracteres.");
     }
 
+    /**
+     * Muestra la frecuencia de palabras del contenido activo.
+     */
     @FXML
     public void mostrarFrecuenciaPalabras() {
         InformeGenerator gen = crearAnalizador();
@@ -211,6 +245,12 @@ public class NotaFxController {
         mostrarPopup("Frecuencia de palabras", sb.toString());
     }
 
+    /**
+     * Muestra un cuadro de diálogo informativo.
+     *
+     * @param titulo    título de la ventana
+     * @param contenido contenido del mensaje
+     */
     private void mostrarPopup(String titulo, String contenido) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(titulo);

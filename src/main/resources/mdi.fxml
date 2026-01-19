@@ -29,13 +29,13 @@
         </VBox>
     </top>
 
-    <!-- CENTRO: STACKPANE MDI + PANTALLA PRINCIPAL -->
+    <!-- STACKPANE MDI + PANTALLA PRINCIPAL -->
     <center>
         <StackPane fx:id="escritorio">
 
             <HBox spacing="20" style="-fx-padding: 20;">
 
-                <!-- PANEL IZQUIERDO (50%) -->
+                <!-- PANEL IZQUIERDO -->
                 <VBox alignment="CENTER"
                       spacing="10"
                       HBox.hgrow="ALWAYS"
@@ -49,7 +49,7 @@
                             VBox.vgrow="ALWAYS"/>
                 </VBox>
 
-                <!-- PANEL DERECHO (50%) -->
+                <!-- PANEL DERECHO -->
                 <VBox spacing="10"
                       HBox.hgrow="ALWAYS"
                       maxWidth="Infinity">
