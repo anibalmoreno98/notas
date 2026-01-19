@@ -34,7 +34,11 @@ public class ListaNotasController {
     public void initialize() {
         try {
             listaNotas.getItems().clear();
-            service.listar().forEach(n -> listaNotas.getItems().add(n.getTitulo()));
+
+            var notas = service.listar();
+            notas.sort((a, b) -> Long.compare(b.getId(), a.getId())); // ← orden descendente por ID
+
+            notas.forEach(n -> listaNotas.getItems().add(n.getTitulo()));
 
             listaNotas.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2) {
@@ -65,6 +69,7 @@ public class ListaNotasController {
 
             if (mainController != null) {
                 mainController.setEstado("Nota cargada");
+                mainController.setContenidoActual(nota.getContenido()); // ← IMPORTANTE
             }
 
             Stage stage = new Stage();

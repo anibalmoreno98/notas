@@ -33,13 +33,17 @@ public class NotaFxController {
     // Guardamos la pantalla principal
     private Node pantallaPrincipal;
 
+    // NUEVO: contenido de la nota actualmente seleccionada
+    private String contenidoActual = "";
+
     @FXML
     public void initialize() {
         try {
-            // Guardar la pantalla principal (primer hijo del StackPane)
             pantallaPrincipal = escritorio.getChildren().get(0);
-
             cargarUltimaNota();
+
+            // Inicialmente, el contenido actual es la última nota
+            contenidoActual = txtContenidoUltimaNota.getText();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,12 +59,22 @@ public class NotaFxController {
             var notas = service.listar();
 
             if (!notas.isEmpty()) {
-                Nota ultima = notas.get(notas.size() - 1);
+
+                // Ordenar por ID descendente
+                notas.sort((a, b) -> Long.compare(b.getId(), a.getId()));
+
+                Nota ultima = notas.get(0);
+
                 lblTituloUltimaNota.setText(ultima.getTitulo());
                 txtContenidoUltimaNota.setText(ultima.getContenido());
+
+                // Actualizar nota activa
+                contenidoActual = ultima.getContenido();
+
             } else {
                 lblTituloUltimaNota.setText("(ninguna)");
                 txtContenidoUltimaNota.setText("");
+                contenidoActual = "";
             }
 
         } catch (Exception e) {
@@ -73,11 +87,17 @@ public class NotaFxController {
     }
 
     // ---------------------------------------------------------
+    // MÉTODO PARA ACTUALIZAR LA NOTA ACTIVA
+    // ---------------------------------------------------------
+    public void setContenidoActual(String texto) {
+        this.contenidoActual = texto;
+    }
+
+    // ---------------------------------------------------------
     // VOLVER ATRÁS (MDI)
     // ---------------------------------------------------------
     @FXML
     public void volverAtras() {
-        // Restaurar la pantalla principal
         escritorio.getChildren().setAll(pantallaPrincipal);
         setEstado("Volviste a la pantalla principal");
     }
@@ -134,7 +154,7 @@ public class NotaFxController {
             Node root = loader.load();
 
             InformeController controller = loader.getController();
-            controller.cargarTexto(txtContenidoUltimaNota.getText());
+            controller.cargarTexto(contenidoActual);
 
             javafx.stage.Stage stage = new javafx.stage.Stage();
             stage.setTitle("Informe del documento");
@@ -149,10 +169,10 @@ public class NotaFxController {
     }
 
     // ---------------------------------------------------------
-    // ANÁLISIS DE TEXTO
+    // ANÁLISIS DE TEXTO (USANDO contenidoActual)
     // ---------------------------------------------------------
     private InformeGenerator crearAnalizador() {
-        return new InformeGenerator(txtContenidoUltimaNota.getText());
+        return new InformeGenerator(contenidoActual);
     }
 
     @FXML

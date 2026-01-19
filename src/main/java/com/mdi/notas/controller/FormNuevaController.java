@@ -41,6 +41,7 @@ public class FormNuevaController {
             txtContenido.clear();
 
             if (mainController != null) {
+                mainController.setContenidoActual(n.getContenido()); // ← IMPORTANTE
                 mainController.refrescarUltimaNota();
                 mainController.volverAtras();
             }
@@ -57,4 +58,3 @@ public class FormNuevaController {
         }
     }
 }
-
