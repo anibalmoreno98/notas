@@ -50,7 +50,7 @@ public class App extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/mdi.fxml"));
         loader.setControllerFactory(context::getBean);
 
-        stage.setScene(new Scene(loader.load(), 900, 600));
+        stage.setScene(new Scene(loader.load(), 360, 640));
         stage.setTitle("MDI Notas");
         stage.show();
     }
