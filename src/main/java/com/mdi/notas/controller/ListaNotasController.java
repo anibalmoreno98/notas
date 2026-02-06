@@ -21,7 +21,7 @@ import org.springframework.stereotype.Controller;
 public class ListaNotasController {
 
     /** Servicio encargado de gestionar las operaciones CRUD de las notas. */
-    private final NotaService service;
+    private final Carpeta service;
 
     /** Referencia al controlador principal del MDI para comunicación entre pantallas. */
     private NotaFxController mainController;
@@ -40,7 +40,7 @@ public class ListaNotasController {
      *
      * @param service servicio de gestión de notas
      */
-    public ListaNotasController(NotaService service) {
+    public ListaNotasController(Carpeta service) {
         this.service = service;
     }
 
