@@ -41,4 +41,13 @@ public class RepositoryNota {
         Path archivo = base.resolve(carpeta).resolve(titulo + ".txt");
         if (Files.exists(archivo)) Files.delete(archivo);
     }
+
+    public Nota buscarPorTitulo(String carpeta, String titulo) throws IOException {
+        Path archivo = base.resolve(carpeta).resolve(titulo + ".txt");
+
+        if (!Files.exists(archivo)) return null;
+
+        String contenido = Files.readString(archivo);
+        return new Nota(titulo, contenido, carpeta);
+    }
 }

@@ -27,4 +27,9 @@ public class NotaService {
     public void borrar(String carpeta, String titulo) throws IOException {
         repo.borrar(carpeta, titulo);
     }
+
+    public Nota buscarPorTitulo(String carpeta, String titulo) throws IOException {
+        return repo.buscarPorTitulo(carpeta, titulo);
+    }
+
 }

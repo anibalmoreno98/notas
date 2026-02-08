@@ -12,60 +12,38 @@ import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import org.springframework.stereotype.Controller;
 
-/**
- * Controlador encargado de gestionar la ventana que muestra la lista de notas.
- * Permite visualizar todas las notas ordenadas por fecha de creación (ID descendente),
- * abrir una nota mediante doble clic y volver a la pantalla principal del MDI.
- */
+import java.util.List;
+
 @Controller
 public class ListaNotasController {
 
-    /** Servicio encargado de gestionar las operaciones CRUD de las notas. */
-    private final Carpeta service;
+    private final NotaService service;
 
-    /** Referencia al controlador principal del MDI para comunicación entre pantallas. */
-    private NotaFxController mainController;
+    private CarpetaFxController mainController;
 
-    /**
-     * Establece el controlador principal para permitir comunicación con el MDI.
-     *
-     * @param mainController instancia del controlador principal
-     */
-    public void setMainController(NotaFxController mainController) {
+    public void setMainController(CarpetaFxController mainController) {
         this.mainController = mainController;
     }
 
-    /**
-     * Constructor que recibe el servicio de notas mediante inyección de dependencias.
-     *
-     * @param service servicio de gestión de notas
-     */
-    public ListaNotasController(Carpeta service) {
+    public ListaNotasController(NotaService service) {
         this.service = service;
     }
 
     @FXML
     private ListView<String> listaNotas;
 
-    /**
-     * Inicializa la lista de notas.
-     * Carga todas las notas desde la base de datos, las ordena por ID descendente
-     * y configura el evento de doble clic para abrir una nota.
-     */
     @FXML
     public void initialize() {
         try {
             listaNotas.getItems().clear();
 
-            var notas = service.listar();
-            notas.sort((a, b) -> Long.compare(b.getId(), a.getId()));
+            String carpeta = mainController != null ? mainController.getCarpetaActual() : "General";
+            List<Nota> notas = service.listarPorCarpeta(carpeta);
 
             notas.forEach(n -> listaNotas.getItems().add(n.getTitulo()));
 
             listaNotas.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2) {
-                    abrirNotaSeleccionada();
-                }
+                if (event.getClickCount() == 2) abrirNotaSeleccionada();
             });
 
         } catch (Exception e) {
@@ -73,17 +51,13 @@ public class ListaNotasController {
         }
     }
 
-    /**
-     * Abre una nota seleccionada en una nueva ventana.
-     * Carga el archivo FXML correspondiente, asigna los valores de la nota
-     * y actualiza el contenido activo en el controlador principal.
-     */
     private void abrirNotaSeleccionada() {
         try {
             String titulo = listaNotas.getSelectionModel().getSelectedItem();
             if (titulo == null) return;
 
-            Nota nota = service.buscarPorTitulo(titulo);
+            String carpeta = mainController.getCarpetaActual();
+            Nota nota = service.buscarPorTitulo(carpeta, titulo);
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/VerNota.fxml"));
             Parent root = loader.load();
@@ -96,7 +70,6 @@ public class ListaNotasController {
 
             if (mainController != null) {
                 mainController.setEstado("Nota cargada");
-                mainController.setContenidoActual(nota.getContenido());
             }
 
             Stage stage = new Stage();
@@ -109,15 +82,8 @@ public class ListaNotasController {
         }
     }
 
-    /**
-     * Vuelve a la pantalla principal del MDI.
-     * Este método se ejecuta al pulsar el botón "Volver atrás".
-     */
     @FXML
     public void volverAtras() {
-        if (mainController != null) {
-            mainController.volverAtras();
-        }
+        if (mainController != null) mainController.volverAtras();
     }
 }
-

@@ -53,8 +53,6 @@ public class FormNuevaController {
 
     @FXML
     public void volverAtras() {
-        if (mainController != null) {
-            mainController.volverAtras();
-        }
+        if (mainController != null) mainController.volverAtras();
     }
 }
