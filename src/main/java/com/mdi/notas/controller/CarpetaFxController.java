@@ -2,18 +2,12 @@ package com.mdi.notas.controller;
 
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import org.springframework.stereotype.Controller;
 
@@ -32,9 +26,6 @@ public class CarpetaFxController {
 
     @FXML
     private Button btnAdd;
-
-    @FXML
-    private StackPane panelCentral;
 
     @FXML
     private ListView<String> listaCarpetas;
@@ -79,11 +70,23 @@ public class CarpetaFxController {
 
     private ChangeListener<String> guardadoListener;
 
-    @FXML
-    public void volverDesdeVerNota() {
-        mostrarVistaNotas();
-    }
+    private String notaActualTitulo;
 
+    private boolean notaEsFavorita;
+
+    @FXML
+    private Button btnFavorito;
+
+    @FXML
+    private Button btnQuitarFavorito;
+
+    private String carpetaRealDeLaNota;
+
+    @FXML
+    private Button btnEliminarDefinitivo;
+
+    @FXML
+    private Button btnEliminar;
 
     @FXML
     public void cancelarNuevaCarpeta() {
@@ -123,8 +126,14 @@ public class CarpetaFxController {
         btnAdd.setOnAction(e -> crearNota());
 
         mostrarVistaNotas();
-        cargarNotasDeCarpeta(carpeta);
+
+        if (carpeta.equals("Favoritos")) {
+            cargarNotasFavoritas();
+        } else {
+            cargarNotasDeCarpeta(carpeta);
+        }
     }
+
 
     private void cargarNotasDeCarpeta(String carpeta) {
         try {
@@ -341,30 +350,78 @@ public class CarpetaFxController {
     private void abrirNota(String titulo) {
         try {
             NotaService service = App.getContext().getBean(NotaService.class);
-            Nota nota = service.buscarPorTitulo(carpetaActual, titulo);
+            Nota nota;
 
+            // Si estamos en Favoritos, buscar en todas las carpetas
+            if ("Favoritos".equals(carpetaActual)) {
+                nota = service.buscarEnTodas(titulo);
+            } else {
+                nota = service.buscarPorTitulo(carpetaActual, titulo);
+            }
+
+            if (nota == null) {
+                setEstado("No se pudo abrir la nota");
+                return;
+            }
+
+            // Guardamos título y carpeta real
+            notaActualTitulo = titulo;
+            carpetaRealDeLaNota = nota.getCarpeta();
+
+            // Mostrar contenido
             lblTituloNota.setText(nota.getTitulo());
             txtContenidoNota.setText(nota.getContenido());
 
-            // Fondo claro y sin cursor parpadeante
             txtContenidoNota.setStyle(
-                "-fx-font-size: 16px;" +
-                "-fx-text-fill: black;" +
-                "-fx-control-inner-background: white;" +
-                "-fx-background-insets: 0;" +
-                "-fx-padding: 10;"
+                    "-fx-font-size: 16px;" +
+                    "-fx-text-fill: black;" +
+                    "-fx-control-inner-background: white;" +
+                    "-fx-background-insets: 0;" +
+                    "-fx-padding: 10;"
             );
 
             txtContenidoNota.setFocusTraversable(false);
 
-            // Evitar duplicar listeners
+            // Listener de guardado automático
             if (guardadoListener != null) {
                 txtContenidoNota.textProperty().removeListener(guardadoListener);
             }
 
-            // Crear listener nuevo
-            guardadoListener = (obs, oldVal, newVal) -> guardarNotaAuto(titulo, newVal);
+            guardadoListener = (obs, oldVal, newVal) -> guardarNotaAuto(notaActualTitulo, newVal);
             txtContenidoNota.textProperty().addListener(guardadoListener);
+
+            // Favoritos
+            notaEsFavorita = nota.isFavorita();
+
+            // Si estamos en Favoritos, nunca mostrar "Añadir a favoritos"
+            if ("Favoritos".equals(carpetaActual)) {
+                btnFavorito.setVisible(false);
+                btnFavorito.setManaged(false);
+
+                btnQuitarFavorito.setVisible(true);
+                btnQuitarFavorito.setManaged(true);
+            } else {
+                btnFavorito.setVisible(!notaEsFavorita);
+                btnFavorito.setManaged(!notaEsFavorita);
+
+                btnQuitarFavorito.setVisible(notaEsFavorita);
+                btnQuitarFavorito.setManaged(notaEsFavorita);
+            }
+
+            // Eliminadas: solo mostrar "Eliminar definitivamente"
+            if ("Eliminadas".equals(carpetaActual)) {
+                btnEliminar.setVisible(false);
+                btnEliminar.setManaged(false);
+
+                btnEliminarDefinitivo.setVisible(true);
+                btnEliminarDefinitivo.setManaged(true);
+            } else {
+                btnEliminar.setVisible(true);
+                btnEliminar.setManaged(true);
+
+                btnEliminarDefinitivo.setVisible(false);
+                btnEliminarDefinitivo.setManaged(false);
+            }
 
             mostrarVistaVerNota();
             setEstado("Leyendo nota: " + titulo);
@@ -374,6 +431,9 @@ public class CarpetaFxController {
             setEstado("Error abriendo nota");
         }
     }
+
+
+
 
 
     private void ocultarTodasLasVistas() {
@@ -400,14 +460,152 @@ public class CarpetaFxController {
             Nota nota = new Nota();
             nota.setTitulo(titulo);
             nota.setContenido(nuevoContenido);
-            nota.setCarpeta(carpetaActual);
+            nota.setCarpeta(carpetaRealDeLaNota);
 
-            service.guardar(nota);
+
+            if (!"Favoritos".equals(carpetaActual) && !"Eliminadas".equals(carpetaActual)) {
+                service.guardar(nota);
+            }
+
             setEstado("Guardado automáticamente");
 
         } catch (Exception e) {
             e.printStackTrace();
             setEstado("Error guardando automáticamente");
+        }
+    }
+
+    @FXML
+    private void eliminarNotaActual() {
+        try {
+            NotaService service = App.getContext().getBean(NotaService.class);
+
+            // Buscar la nota actual
+            Nota nota = service.buscarPorTitulo(carpetaRealDeLaNota, notaActualTitulo);
+
+            // Moverla a la carpeta "Eliminadas"
+            nota.setCarpeta("Eliminadas");
+            service.guardar(nota);
+
+            setEstado("Nota movida a Eliminadas");
+
+            // Volver a la lista de notas
+            mostrarVistaNotas();
+            if ("Favoritos".equals(carpetaActual)) {
+                cargarNotasFavoritas();
+            } else {
+                cargarNotasDeCarpeta(carpetaActual);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            setEstado("Error eliminando nota");
+        }
+    }
+
+    @FXML
+    private void marcarFavorito() {
+        try {
+            NotaService service = App.getContext().getBean(NotaService.class);
+            Nota nota = service.buscarEnTodas(notaActualTitulo);
+
+            nota.setFavorita(true);
+            service.guardar(nota);
+
+            notaEsFavorita = true;
+
+            btnFavorito.setVisible(false);
+            btnFavorito.setManaged(false);
+
+            btnQuitarFavorito.setVisible(true);
+            btnQuitarFavorito.setManaged(true);
+
+            setEstado("Añadida a favoritos");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            setEstado("Error al añadir a favoritos");
+        }
+    }
+
+
+    @FXML
+    private void desmarcarFavorito() {
+        try {
+            NotaService service = App.getContext().getBean(NotaService.class);
+            Nota nota = service.buscarEnTodas(notaActualTitulo);
+
+            nota.setFavorita(false);
+            service.guardar(nota);
+
+            notaEsFavorita = false;
+
+            btnFavorito.setVisible(true);
+            btnFavorito.setManaged(true);
+
+            btnQuitarFavorito.setVisible(false);
+            btnQuitarFavorito.setManaged(false);
+
+            setEstado("Quitada de favoritos");
+
+            // Si estás dentro de Favoritos, refresca la lista
+            if ("Favoritos".equals(carpetaActual)) {
+                cargarNotasFavoritas();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            setEstado("Error al quitar de favoritos");
+        }
+    }
+
+
+
+    private void cargarNotasFavoritas() {
+        try {
+            NotaService service = App.getContext().getBean(NotaService.class);
+            List<Nota> notas = service.listarTodas();
+
+            listaNotas.getItems().clear();
+
+            for (Nota n : notas) {
+                if (n.isFavorita()) {
+                    listaNotas.getItems().add(n.getTitulo());
+                }
+            }
+
+            listaNotas.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2) {
+                    String titulo = listaNotas.getSelectionModel().getSelectedItem();
+                    if (titulo != null) {
+                        abrirNota(titulo);
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            setEstado("Error cargando favoritos");
+        }
+    }
+
+    @FXML
+    private void eliminarDefinitivamente() {
+        try {
+            NotaService service = App.getContext().getBean(NotaService.class);
+
+            // Eliminar archivo .txt y .fav
+            service.borrarNota(carpetaRealDeLaNota, notaActualTitulo);
+
+            setEstado("Nota eliminada definitivamente");
+
+            // Volver a la lista de Eliminadas
+            mostrarVistaNotas();
+            cargarNotasDeCarpeta("Eliminadas");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            setEstado("Error eliminando definitivamente");
         }
     }
 

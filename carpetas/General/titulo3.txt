@@ -1,6 +1,1 @@
-Esta es la tercera nota, es un poco más larga, estamos probando.
-Tiene una segunda línea, 
-una tercera,
-una cuarta,
-y así podríamos continuar.
-Saludos!
+esta nota se escribió el lunes

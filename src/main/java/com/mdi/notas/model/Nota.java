@@ -5,14 +5,17 @@ public class Nota {
     private String titulo;
     private String contenido;
     private String carpeta;
+    private boolean favorita;
 
     public Nota() {
+        this.favorita = false;
     }
 
     public Nota(String titulo, String contenido, String carpeta) {
         this.titulo = titulo;
         this.contenido = contenido;
         this.carpeta = carpeta;
+        this.favorita = false;
     }
 
     public String getTitulo() {
@@ -37,5 +40,13 @@ public class Nota {
 
     public void setCarpeta(String carpeta) {
         this.carpeta = carpeta;
+    }
+
+    public boolean isFavorita() {
+        return favorita;
+    }
+
+    public void setFavorita(boolean favorita) {
+        this.favorita = favorita;
     }
 }

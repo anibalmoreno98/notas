@@ -28,8 +28,31 @@ public class NotaService {
         repo.borrar(carpeta, titulo);
     }
 
+    public void borrarNota(String carpeta, String titulo) throws IOException {
+        repo.borrar(carpeta, titulo);
+    }
+
     public Nota buscarPorTitulo(String carpeta, String titulo) throws IOException {
         return repo.buscarPorTitulo(carpeta, titulo);
     }
 
+    public List<Nota> listarTodas() {
+        return repo.findAll();
+    }
+
+    public Nota buscarEnTodas(String titulo) {
+        List<Nota> todas = repo.findAll();
+        for (Nota n : todas) {
+            if (n.getTitulo().equals(titulo)) {
+                return n;
+            }
+        }
+        return null;
+    }
+
+    public List<Nota> listarFavoritas() {
+        return repo.findAll().stream()
+                .filter(Nota::isFavorita)
+                .toList();
+    }
 }
