@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.mdi.notas.controller.MainController"
+            style="-fx-background-color: #1e1e1c;">
+
+    <!-- HEADER -->
+    <top>
+        <HBox spacing="10" style="-fx-padding: 20; -fx-background-color: #2a2a27;">
+            <Label fx:id="lblTitulo"
+                   text="Carpetas"
+                   style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #d4af37;"/>
+
+            <Pane HBox.hgrow="ALWAYS"/>
+
+            <Button fx:id="btnBack"
+                    text="←"
+                    visible="false"
+                    managed="false"
+                    style="-fx-font-size: 26px; -fx-text-fill: #d4af37;"/>
+
+            <Button fx:id="btnAdd"
+                    text="+"
+                    style="-fx-font-size: 26px; -fx-text-fill: #d4af37;"/>
+        </HBox>
+    </top>
+
+    <!-- CONTENIDO CENTRAL -->
+    <center>
+        <StackPane fx:id="stackRoot" style="-fx-padding: 10;">
+
+            <fx:include fx:id="vistaCarpetas" source="CarpetasView.fxml"/>
+            <fx:include fx:id="vistaNotas" source="NotasView.fxml"/>
+            <fx:include fx:id="vistaNuevaNota" source="NuevaNotaView.fxml"/>
+            <fx:include fx:id="vistaNuevaCarpeta" source="NuevaCarpetaView.fxml"/>
+            <fx:include fx:id="vistaVerNota" source="VerNotaView.fxml"/>
+
+        </StackPane>
+    </center>
+
+    <!-- FOOTER -->
+    <bottom>
+        <HBox style="-fx-padding: 5; -fx-background-color: #2a2a27;">
+            <Label fx:id="lblEstado"
+                   text="Listo"
+                   style="-fx-text-fill: #d4af37;"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

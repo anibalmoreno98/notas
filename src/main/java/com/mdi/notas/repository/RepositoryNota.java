@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public class RepositoryNota {
 
-    // Carpeta raíz donde guardas todo
+    // Carpeta raíz donde se guardan todas las carpetas de notas
     private final Path base = Paths.get("carpetas");
 
     // ------------------------------
@@ -62,7 +62,7 @@ public class RepositoryNota {
     }
 
     // ------------------------------
-    // BORRAR NOTA
+    // BORRADO DEFINITIVO
     // ------------------------------
     public void borrar(String carpeta, String titulo) throws IOException {
         Path archivo = base.resolve(carpeta).resolve(titulo + ".txt");
@@ -90,12 +90,12 @@ public class RepositoryNota {
     }
 
     // ------------------------------
-    // LISTAR TODAS LAS NOTAS (para Favoritos)
+    // LISTAR TODAS LAS NOTAS
     // ------------------------------
     public List<Nota> findAll() {
         List<Nota> lista = new ArrayList<>();
 
-        File baseDir = base.toFile(); // carpeta "carpetas"
+        File baseDir = base.toFile();
 
         if (!baseDir.exists()) return lista;
 
@@ -139,13 +139,4 @@ public class RepositoryNota {
             return null;
         }
     }
-
-    public void borrarNota(String carpeta, String titulo) throws IOException {
-        Path archivo = base.resolve(carpeta).resolve(titulo + ".txt");
-        Path fav = base.resolve(carpeta).resolve(titulo + ".fav");
-
-        if (Files.exists(archivo)) Files.delete(archivo);
-        if (Files.exists(fav)) Files.delete(fav);
-    }
-
 }

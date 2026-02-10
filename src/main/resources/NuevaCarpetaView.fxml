@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:id="vistaNuevaCarpeta"
+      fx:controller="com.mdi.notas.controller.CarpetasController"
+      spacing="10"
+      visible="false"
+      managed="false"
+      style="-fx-padding: 20;">
+
+    <TextField fx:id="txtNombreNuevaCarpeta" promptText="Nombre de la carpeta"/>
+
+    <Button text="Guardar" onAction="#guardarCarpeta"/>
+
+</VBox>

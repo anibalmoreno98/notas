@@ -1,6 +1,8 @@
 package com.mdi.notas.model;
 
-public class Carpeta {
+import java.io.Serializable;
+
+public class Carpeta implements Serializable {
 
     private String nombre;
 
@@ -17,5 +19,10 @@ public class Carpeta {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    @Override
+    public String toString() {
+        return nombre;
     }
 }

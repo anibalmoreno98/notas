@@ -24,11 +24,12 @@ public class NotaService {
         repo.guardar(nota);
     }
 
-    public void borrar(String carpeta, String titulo) throws IOException {
-        repo.borrar(carpeta, titulo);
+    public void moverAEliminadas(Nota nota) throws IOException {
+        nota.setCarpeta("Eliminadas");
+        repo.guardar(nota);
     }
 
-    public void borrarNota(String carpeta, String titulo) throws IOException {
+    public void borrarDefinitivamente(String carpeta, String titulo) throws IOException {
         repo.borrar(carpeta, titulo);
     }
 

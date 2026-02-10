@@ -1,6 +1,8 @@
 package com.mdi.notas.model;
 
-public class Nota {
+import java.io.Serializable;
+
+public class Nota implements Serializable {
 
     private String titulo;
     private String contenido;
@@ -16,6 +18,13 @@ public class Nota {
         this.contenido = contenido;
         this.carpeta = carpeta;
         this.favorita = false;
+    }
+
+    public Nota(String titulo, String contenido, String carpeta, boolean favorita) {
+        this.titulo = titulo;
+        this.contenido = contenido;
+        this.carpeta = carpeta;
+        this.favorita = favorita;
     }
 
     public String getTitulo() {
@@ -48,5 +57,14 @@ public class Nota {
 
     public void setFavorita(boolean favorita) {
         this.favorita = favorita;
+    }
+
+    @Override
+    public String toString() {
+        return "Nota{" +
+                "titulo='" + titulo + '\'' +
+                ", carpeta='" + carpeta + '\'' +
+                ", favorita=" + favorita +
+                '}';
     }
 }
