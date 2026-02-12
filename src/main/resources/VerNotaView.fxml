@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:id="vistaVerNota"
+      fx:controller="com.mdi.controller.VistaNotaController"
+      spacing="10"
+      visible="false"
+      managed="false"
+      style="-fx-padding: 20;">
+
+    <Label fx:id="lblTituloNota"
+           style="-fx-font-size: 26px; -fx-font-weight: bold;"/>
+
+    <TextArea fx:id="txtContenidoNota"
+              wrapText="true"
+              prefRowCount="12"/>
+
+    <Button fx:id="btnEliminar" text="Eliminar" onAction="#eliminarNotaActual"/>
+    <Button fx:id="btnEliminarDefinitivo" text="Eliminar definitivamente"
+            visible="false" managed="false"
+            onAction="#eliminarDefinitivamente"/>
+
+    <Button fx:id="btnFavorito" text="★ Añadir a favoritos" onAction="#marcarFavorito"/>
+    <Button fx:id="btnQuitarFavorito" text="✖ Quitar de favoritos"
+            visible="false" managed="false"
+            onAction="#desmarcarFavorito"/>
+
+</VBox>
