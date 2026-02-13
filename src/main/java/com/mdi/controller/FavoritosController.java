@@ -6,11 +6,15 @@ import com.mdi.service.NotaService;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+
 /**
  * Controlador encargado de gestionar la vista de notas marcadas como favoritas.
  * Se comunica con {@link MainController} para actualizar la interfaz y con
  * {@link NotaService} para obtener y modificar las notas almacenadas.
  */
+@Controller
 public class FavoritosController {
 
     /** Referencia al controlador principal, inyectada por MainController. */
@@ -55,58 +59,4 @@ public class FavoritosController {
         }
     }
 
-    /**
-     * Marca la nota actualmente abierta como favorita.
-     * Actualiza el estado y guarda el cambio mediante el servicio correspondiente.
-     */
-    public void marcarFavorito() {
-        try {
-            NotaService service = App.getContext().getBean(NotaService.class);
-            Nota nota = service.buscarEnTodas(main.notaActualTitulo);
-
-            if (nota == null) {
-                main.setEstado("No se encontró la nota para marcar como favorita");
-                return;
-            }
-
-            nota.setFavorita(true);
-            service.guardar(nota);
-
-            main.setEstado("Añadida a favoritos");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            main.setEstado("Error al añadir a favoritos");
-        }
-    }
-
-    /**
-     * Quita la marca de favorito de la nota actualmente abierta.
-     * Si el usuario está en la carpeta "Favoritos", la lista se refresca automáticamente.
-     */
-    public void desmarcarFavorito() {
-        try {
-            NotaService service = App.getContext().getBean(NotaService.class);
-            Nota nota = service.buscarEnTodas(main.notaActualTitulo);
-
-            if (nota == null) {
-                main.setEstado("No se encontró la nota para quitar de favoritos");
-                return;
-            }
-
-            nota.setFavorita(false);
-            service.guardar(nota);
-
-            main.setEstado("Quitada de favoritos");
-
-            // Si estamos en la carpeta Favoritos, refrescar la lista
-            if ("Favoritos".equals(main.carpetaActual)) {
-                cargarFavoritos();
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            main.setEstado("Error al quitar de favoritos");
-        }
-    }
 }

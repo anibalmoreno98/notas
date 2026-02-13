@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
 <BorderPane xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml/1"
+            xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.mdi.controller.MainController"
             style="-fx-background-color: #1e1e1c;">
 
-    <!-- HEADER -->
     <top>
         <HBox spacing="10" style="-fx-padding: 20; -fx-background-color: #2a2a27;">
             <Label fx:id="lblTitulo"
@@ -26,20 +28,19 @@
         </HBox>
     </top>
 
-    <!-- CONTENIDO CENTRAL -->
     <center>
         <StackPane fx:id="stackRoot" style="-fx-padding: 10;">
 
-            <fx:include fx:id="vistaCarpetas" source="CarpetasView.fxml"/>
-            <fx:include fx:id="vistaNotas" source="NotasView.fxml"/>
-            <fx:include fx:id="vistaNuevaNota" source="NuevaNotaView.fxml"/>
-            <fx:include fx:id="vistaNuevaCarpeta" source="NuevaCarpetaView.fxml"/>
-            <fx:include fx:id="vistaVerNota" source="VerNotaView.fxml"/>
+            <!-- ESTOS SON SOLO NODOS, NO CONTROLADORES -->
+            <fx:include fx:id="carpetasView" source="CarpetasView.fxml"/>
+            <fx:include fx:id="notasView" source="NotasView.fxml"/>
+            <fx:include fx:id="nuevaNotaView" source="NuevaNotaView.fxml"/>
+            <fx:include fx:id="nuevaCarpetaView" source="NuevaCarpetaView.fxml"/>
+            <fx:include fx:id="verNotaView" source="VerNotaView.fxml"/>
 
         </StackPane>
     </center>
 
-    <!-- FOOTER -->
     <bottom>
         <HBox style="-fx-padding: 5; -fx-background-color: #2a2a27;">
             <Label fx:id="lblEstado"

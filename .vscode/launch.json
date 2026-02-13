@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "JavaFX App",
+            "request": "launch",
+            "mainClass": "com.mdi.notas.App",
+            "vmArgs": "--add-modules javafx.controls,javafx.fxml"
+        }
+    ]
+}

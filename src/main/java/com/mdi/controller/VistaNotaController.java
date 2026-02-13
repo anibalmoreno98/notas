@@ -1,41 +1,27 @@
 package com.mdi.controller;
 
+import org.springframework.stereotype.Controller;
+
 import com.mdi.App;
 import com.mdi.model.Nota;
 import com.mdi.service.NotaService;
 
-/**
- * Controlador responsable de gestionar la visualización de una nota.
- * Se encarga de cargar su contenido, actualizar la interfaz según el estado
- * de la nota (favorita, eliminada, etc.) y ejecutar acciones como la eliminación definitiva.
- */
+import javafx.fxml.FXML;
+
+@Controller
 public class VistaNotaController {
 
-    /** Controlador principal que coordina todas las vistas. */
     private MainController main;
 
-    /**
-     * Asigna el controlador principal para permitir la comunicación entre vistas.
-     *
-     * @param main instancia del controlador principal
-     */
     public void setMain(MainController main) {
         this.main = main;
     }
 
-    /**
-     * Abre una nota existente y actualiza la interfaz con su contenido.
-     * Determina si la nota pertenece a Favoritos o a una carpeta normal,
-     * ajusta los botones visibles según el contexto y cambia a la vista de lectura.
-     *
-     * @param titulo título de la nota que se desea abrir
-     */
     public void abrirNota(String titulo) {
         try {
             NotaService service = App.getContext().getBean(NotaService.class);
             Nota nota;
 
-            // Buscar la nota según la carpeta actual
             if ("Favoritos".equals(main.carpetaActual)) {
                 nota = service.buscarEnTodas(titulo);
             } else {
@@ -47,15 +33,12 @@ public class VistaNotaController {
                 return;
             }
 
-            // Actualizar estado global
             main.notaActualTitulo = titulo;
             main.carpetaRealDeLaNota = nota.getCarpeta();
 
-            // Mostrar contenido
             main.lblTituloNota.setText(nota.getTitulo());
             main.txtContenidoNota.setText(nota.getContenido());
 
-            // Mostrar botones según si es favorita
             boolean esFavorita = nota.isFavorita();
 
             main.btnFavorito.setVisible(!esFavorita);
@@ -64,7 +47,6 @@ public class VistaNotaController {
             main.btnQuitarFavorito.setVisible(esFavorita);
             main.btnQuitarFavorito.setManaged(esFavorita);
 
-            // Mostrar botones según si está en Eliminadas
             if ("Eliminadas".equals(main.carpetaActual)) {
                 main.btnEliminar.setVisible(false);
                 main.btnEliminar.setManaged(false);
@@ -79,8 +61,7 @@ public class VistaNotaController {
                 main.btnEliminarDefinitivo.setManaged(false);
             }
 
-            // Cambiar a la vista de lectura
-            main.mostrarVista(main.vistaVerNota);
+            main.mostrarVista(main.verNotaView);
             main.setEstado("Leyendo nota: " + titulo);
 
         } catch (Exception e) {
@@ -89,11 +70,6 @@ public class VistaNotaController {
         }
     }
 
-    /**
-     * Elimina una nota de forma permanente.
-     * Se utiliza únicamente cuando la nota se encuentra en la carpeta "Eliminadas".
-     * Tras eliminarla, recarga la lista de notas y vuelve a la vista anterior.
-     */
     public void eliminarDefinitivamente() {
         try {
             NotaService service = App.getContext().getBean(NotaService.class);
@@ -103,14 +79,93 @@ public class VistaNotaController {
             main.setEstado("Nota eliminada definitivamente");
 
             // Recargar la carpeta Eliminadas
-            main.notasViewController.cargarNotas("Eliminadas");
+            main.notasController.cargarNotas("Eliminadas");  // ← CORREGIDO
 
             // Volver a la vista de notas
-            main.mostrarVista(main.vistaNotas);
+            main.mostrarVista(main.notasView);
 
         } catch (Exception e) {
             e.printStackTrace();
             main.setEstado("Error eliminando definitivamente");
+        }
+    }
+
+    @FXML
+    public void eliminarNotaActual() {
+        try {
+            NotaService service = App.getContext().getBean(NotaService.class);
+
+            Nota nota = service.buscarPorTitulo(main.carpetaRealDeLaNota, main.notaActualTitulo);
+            service.moverAEliminadas(nota);
+
+            main.setEstado("Nota movida a Eliminadas");
+
+            main.notasController.cargarNotas(main.carpetaActual);  // ← CORREGIDO
+            main.mostrarVista(main.notasView);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            main.setEstado("Error eliminando nota");
+        }
+    }
+
+    @FXML
+    public void marcarFavorito() {
+        try {
+            NotaService service = App.getContext().getBean(NotaService.class);
+            Nota nota = service.buscarEnTodas(main.notaActualTitulo);
+
+            if (nota == null) {
+                main.setEstado("No se encontró la nota para marcar como favorita");
+                return;
+            }
+
+            nota.setFavorita(true);
+            service.guardar(nota);
+
+            main.setEstado("Añadida a favoritos");
+
+            main.btnFavorito.setVisible(false);
+            main.btnFavorito.setManaged(false);
+
+            main.btnQuitarFavorito.setVisible(true);
+            main.btnQuitarFavorito.setManaged(true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            main.setEstado("Error al añadir a favoritos");
+        }
+    }
+
+    @FXML
+    public void desmarcarFavorito() {
+        try {
+            NotaService service = App.getContext().getBean(NotaService.class);
+            Nota nota = service.buscarEnTodas(main.notaActualTitulo);
+
+            if (nota == null) {
+                main.setEstado("No se encontró la nota para quitar de favoritos");
+                return;
+            }
+
+            nota.setFavorita(false);
+            service.guardar(nota);
+
+            main.setEstado("Quitada de favoritos");
+
+            main.btnFavorito.setVisible(true);
+            main.btnFavorito.setManaged(true);
+
+            main.btnQuitarFavorito.setVisible(false);
+            main.btnQuitarFavorito.setManaged(false);
+
+            if ("Favoritos".equals(main.carpetaActual)) {
+                main.favoritosViewController.cargarFavoritos();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            main.setEstado("Error al quitar de favoritos");
         }
     }
 }

@@ -4,55 +4,43 @@ import com.mdi.App;
 import com.mdi.model.Nota;
 import com.mdi.service.NotaService;
 import javafx.fxml.FXML;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 
 import java.util.List;
 
-/**
- * Controlador encargado de gestionar la vista de notas dentro de una carpeta.
- * Se comunica con {@link MainController} para actualizar la interfaz y con
- * {@link NotaService} para realizar operaciones de negocio sobre las notas.
- */
 public class NotasController {
 
-    /** Referencia al controlador principal, inyectada por MainController. */
+    @FXML public VBox root;            // ← NODO RAÍZ DEL FXML
+    @FXML public ListView<String> listaNotas;
+
+    @FXML private TextField txtTituloNuevaNota;
+    @FXML private TextArea txtContenidoNuevaNota;
+
     private MainController main;
 
-    /**
-     * Asigna el controlador principal para permitir la comunicación con la interfaz.
-     *
-     * @param main instancia del controlador principal
-     */
     public void setMain(MainController main) {
         this.main = main;
     }
 
-    /**
-     * Método llamado automáticamente por JavaFX al cargar el FXML.
-     * No se utiliza porque la inicialización depende de que MainController
-     * haya inyectado previamente todos los nodos.
-     */
     @FXML
     public void initialize() {
-        // Intencionalmente vacío
+        // vacío a propósito
     }
 
-    /**
-     * Carga todas las notas pertenecientes a una carpeta específica y actualiza la lista visual.
-     * También configura el evento de doble clic para abrir una nota seleccionada.
-     *
-     * @param carpeta nombre de la carpeta cuyas notas deben mostrarse
-     */
     public void cargarNotas(String carpeta) {
         try {
             NotaService service = App.getContext().getBean(NotaService.class);
             List<Nota> notas = service.listarPorCarpeta(carpeta);
 
-            main.listaNotas.getItems().clear();
-            notas.forEach(n -> main.listaNotas.getItems().add(n.getTitulo()));
+            listaNotas.getItems().clear();
+            notas.forEach(n -> listaNotas.getItems().add(n.getTitulo()));
 
-            main.listaNotas.setOnMouseClicked(event -> {
+            listaNotas.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2) {
-                    String titulo = main.listaNotas.getSelectionModel().getSelectedItem();
+                    String titulo = listaNotas.getSelectionModel().getSelectedItem();
                     if (titulo != null) {
                         main.verNotaViewController.abrirNota(titulo);
                     }
@@ -65,26 +53,28 @@ public class NotasController {
         }
     }
 
-    /**
-     * Guarda una nueva nota utilizando los datos introducidos en la interfaz.
-     * Tras guardar, actualiza la lista de notas y vuelve a la vista principal.
-     */
     @FXML
     public void guardarNota() {
         try {
             NotaService service = App.getContext().getBean(NotaService.class);
 
             Nota n = new Nota();
-            n.setTitulo(main.txtTituloNuevaNota.getText());
-            n.setContenido(main.txtContenidoNuevaNota.getText());
+            n.setTitulo(txtTituloNuevaNota.getText());
+            n.setContenido(txtContenidoNuevaNota.getText());
             n.setCarpeta(main.carpetaActual);
 
             service.guardar(n);
 
             main.setEstado("Nota guardada");
 
+            txtTituloNuevaNota.clear();
+            txtContenidoNuevaNota.clear();
+
             cargarNotas(main.carpetaActual);
-            main.mostrarVista(main.vistaNotas);
+            main.mostrarVista(main.notasView);
+
+            main.btnBack.setVisible(true);
+            main.btnBack.setManaged(true);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,10 +82,6 @@ public class NotasController {
         }
     }
 
-    /**
-     * Elimina (o mueve a Eliminadas) la nota actualmente abierta.
-     * Actualiza la lista de notas tras completar la operación.
-     */
     public void eliminarNotaActual() {
         try {
             NotaService service = App.getContext().getBean(NotaService.class);
